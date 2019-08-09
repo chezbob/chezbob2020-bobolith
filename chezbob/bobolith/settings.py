@@ -16,7 +16,7 @@ import environ
 # The root project directory (equivalent to where .git is)
 root = environ.Path(__file__) - 3
 
-# The public
+# The public root directory (this is what is served by nginx).
 public_root = root.path('public/')
 
 env = environ.Env(
