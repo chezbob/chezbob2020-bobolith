@@ -26,7 +26,7 @@ class User(AbstractUser):
     notes = models.TextField()
 
     # These are the fields required for, e.g. 'manage.py createsuperuser'.
-    REQUIRED_FIELDS = ['email', 'nickname', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'nickname']
 
     def get_short_name(self):
         """Return the short name for the user."""
