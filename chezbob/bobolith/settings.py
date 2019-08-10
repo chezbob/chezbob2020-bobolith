@@ -36,10 +36,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,9 +48,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_extensions',
     'rest_framework',
 
-    'chezbob.bobolith.apps.auth'  # bobolith_auth
+    'chezbob.bobolith.apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +84,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'chezbob.bobolith.wsgi.application'
 
+ASGI_APPLICATION = 'chezbob.bobolith.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -90,7 +93,7 @@ DATABASES = {
     'default': env.db()
 }
 
-AUTH_USER_MODEL = 'bobolith_auth.User'
+AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -110,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -124,7 +126,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
@@ -134,3 +135,13 @@ STATIC_ROOT = public_root('static')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ['static']
+
+# Django Rest Framework
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        # todo: change to a sane default for production!
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}

@@ -12,6 +12,10 @@ djangorestframework = "*"
 django-filter = "*"
 django-environ = "*"
 psycopg2 = "*"
+markdown = "*"
+pygments = "*"
+django-extensions = "*"
+channels = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
