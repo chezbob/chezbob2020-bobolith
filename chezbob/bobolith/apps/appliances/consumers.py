@@ -1,14 +1,16 @@
 import asyncio
 from abc import ABCMeta
 from asyncio import Task
+from dataclasses import asdict
 from datetime import timedelta
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from dacite import from_dict
+from django.conf import settings
 from django.utils.datetime_safe import datetime
 
-from chezbob.bobolith.apps.appliances.protocol import messages as msgs
+from chezbob.bobolith.apps.appliances.protocol import *
 from .models import Appliance
 
 
@@ -34,15 +36,28 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
 
     async def receive_json(self, content, **kwargs):
         # todo: handle bad parse gracefully
-        header = from_dict(data_class=msgs.MessageHeader, data=content)
-        klass = msgs.msg_types[header.msg_type]
+        header = from_dict(data_class=MessageHeader, data=content)
+        klass = msg_types[header.msg_type]
         msg = from_dict(data_class=klass, data=content)
 
         return await self.receive_message(msg, **kwargs)
 
     async def receive_message(self, msg, **kwargs):
-        print(f"RECEIVED MESSAGE: {msg}")
-        pass
+        if isinstance(msg, PingMessage):
+            await self.receive_ping(msg)
+
+    async def receive_ping(self, ping_msg: PingMessage):
+        print(f"RECEIVED {ping_msg}")
+        await self._set_last_heartbeat()
+        await self.send_pong(ping_msg.ping)
+
+    async def send_pong(self, content: str):
+        pong_msg = PongMessage(
+            version=settings.BOBOLITH_PROTOCOL_VERSION,
+            msg_type=msg_types.inverse[PongMessage],
+            pong=content
+        )
+        await self.send_json(asdict(pong_msg))
 
     @database_sync_to_async
     def status_up(self):
@@ -67,27 +82,28 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
     def _get_last_heartbeat(self):
         return self.appliance.last_heartbeat_at
 
+    @database_sync_to_async
+    def _set_last_heartbeat(self):
+        self.appliance.last_heartbeat_at = datetime.now()
+        self.appliance.status = Appliance.STATUS_UP
+        self.appliance.save()
+
     async def _check_heartbeat(self):
         timeout = ApplianceConsumer.HEARTBEAT_TIMEOUT
         heartbeat_delta = timedelta(seconds=timeout)
 
         while True:
-            print("WAITING FOR TIMEOUT...")
             await asyncio.sleep(timeout)
-            print("TIMED OUT...")
 
             last_heartbeat = await self._get_last_heartbeat()
-            print(f"LAST HEARTBEAT: {last_heartbeat}")
 
             if not last_heartbeat:
-                print("NO LAST HEARTBEAT")
                 await self.status_unresponsive()
                 continue
 
             now = datetime.now()
 
             if last_heartbeat + heartbeat_delta < now:
-                print("DIDN'T RECEIVE HEARTBEAT")
                 await self.status_unresponsive()
 
 
