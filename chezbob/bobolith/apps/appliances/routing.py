@@ -1,16 +1,21 @@
 import importlib
-from pprint import pprint
 
+from channels.db import database_sync_to_async
 from django.urls import path
 
 from .models import Appliance
+
+
+# @database_sync_to_async
+def get_appliance(uuid):
+    return Appliance.objects.get(pk=uuid)
 
 
 def dispatch_appliance(scope):
     kwargs = scope['url_route']['kwargs']
     appliance_uuid = kwargs['appliance_uuid']
 
-    appliance = Appliance.objects.get(pk=appliance_uuid)
+    appliance = get_appliance(appliance_uuid)
 
     importlib.invalidate_caches()
 
@@ -18,7 +23,7 @@ def dispatch_appliance(scope):
     module = importlib.import_module(module_name)
     klass = getattr(module, klass_name)
 
-    return klass(scope)
+    return klass(scope, appliance)
 
 
 websocket_urlpatterns = [
