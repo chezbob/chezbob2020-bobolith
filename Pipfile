@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 websockets = "*"
+bpython = "*"
 
 [packages]
 channels = "*"
@@ -17,6 +18,8 @@ django-filter = "*"
 markdown = "*"
 psycopg2 = "*"
 pygments = "*"
+dacite = "*"
+bidict = "*"
 
 [requires]
 python_version = "3.8"

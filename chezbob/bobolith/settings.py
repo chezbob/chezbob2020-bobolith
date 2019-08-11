@@ -36,6 +36,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+# Bobolith Configuration
+BOBOLITH_PROTOCOL_VERSION = 0
+
 # Application definition
 
 INSTALLED_APPS = [

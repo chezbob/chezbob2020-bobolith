@@ -11,14 +11,18 @@ class Appliance(models.Model):
 
     STATUS_UP = 'UP'
     STATUS_DOWN = 'DOWN'
+    STATUS_UNRESPONSIVE = 'UNRESPONSIVE'
+
     STATUS_CHOICES = (
         (STATUS_UP, 'Up'),
-        (STATUS_DOWN, 'Down')
+        (STATUS_DOWN, 'Down'),
+        (STATUS_DOWN, 'Unresponsive')
     )
 
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=STATUS_DOWN)
 
     last_connected_at = models.DateTimeField(_('last connected at'), blank=True, null=True)
+    last_heartbeat_at = models.DateTimeField(_('last heartbeat at'), blank=True, null=True)
 
     @property
     def status_icon(self):
@@ -26,6 +30,8 @@ class Appliance(models.Model):
             return mark_safe('<span style="color: green;">▲</span>')
         if self.status == Appliance.STATUS_DOWN:
             return mark_safe('<span style="color: red;">▼</span>')
+        if self.status == Appliance.STATUS_UNRESPONSIVE:
+            return mark_safe('<span style="color: gold;">▼</span>')
 
     status_icon.fget.short_description = _('status')
 
