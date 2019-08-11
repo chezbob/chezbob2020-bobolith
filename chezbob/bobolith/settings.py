@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'chezbob.bobolith.apps.accounts',
+    'chezbob.bobolith.apps.appliances',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +85,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'chezbob.bobolith.wsgi.application'
 
-ASGI_APPLICATION = 'chezbob.bobolith.asgi.application'
+ASGI_APPLICATION = 'chezbob.bobolith.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

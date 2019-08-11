@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Permission
 from rest_framework import serializers
 
-from chezbob.bobolith.apps.accounts.models import User, Group
+from .models import User, Group
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

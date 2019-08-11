@@ -3,8 +3,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as 
 from django.utils.translation import gettext_lazy as _
 
 from chezbob.bobolith.admin import site as admin_site
-from chezbob.bobolith.apps.accounts.forms import UserCreationForm
-from chezbob.bobolith.apps.accounts.models import User, Group
+from .forms import UserCreationForm
+from .models import User, Group
 
 
 @admin.register(User, site=admin_site)

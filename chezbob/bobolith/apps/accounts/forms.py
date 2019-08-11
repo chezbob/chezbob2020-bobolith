@@ -3,7 +3,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UsernameField
 from django.utils.translation import gettext_lazy as _
 
-from chezbob.bobolith.apps.accounts.models import User
+from .models import User
 
 
 class UserCreationForm(forms.ModelForm):

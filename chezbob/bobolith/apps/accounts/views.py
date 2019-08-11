@@ -1,8 +1,8 @@
 from django.contrib.auth.models import Permission
 from rest_framework import viewsets
 
-from chezbob.bobolith.apps.accounts.models import User, Group
-from chezbob.bobolith.apps.accounts.serializers import UserSerializer, GroupSerializer, PermissionSerializer
+from .models import User, Group
+from .serializers import UserSerializer, GroupSerializer, PermissionSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -5,17 +5,18 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+websockets = "*"
 
 [packages]
+channels = "*"
 django = "*"
 djangorestframework = "*"
-django-filter = "*"
 django-environ = "*"
-psycopg2 = "*"
-markdown = "*"
-pygments = "*"
 django-extensions = "*"
-channels = "*"
+django-filter = "*"
+markdown = "*"
+psycopg2 = "*"
+pygments = "*"
 
 [requires]
 python_version = "3.8"
