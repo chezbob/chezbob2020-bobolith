@@ -4,9 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+bpython = "*"
 pylint = "*"
 websockets = "*"
-bpython = "*"
 
 [packages]
 channels = "*"
@@ -22,4 +22,4 @@ dacite = "*"
 bidict = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

@@ -6,28 +6,28 @@ from django.urls import path
 from .models import Appliance
 
 
-# @database_sync_to_async
 def get_appliance(uuid):
     return Appliance.objects.get(pk=uuid)
 
 
 def dispatch_appliance(scope):
     kwargs = scope['url_route']['kwargs']
-    appliance_uuid = kwargs['appliance_uuid']
+    uuid = kwargs['appliance_uuid']
 
-    appliance = get_appliance(appliance_uuid)
+    [consumer_path] = Appliance.objects.values_list('consumer').get(pk=uuid)
 
+    # Ensure we have the most recent version (even if we have hot-reloading).
     importlib.invalidate_caches()
 
-    [module_name, klass_name] = appliance.consumer.rsplit('.', 1)
+    [module_name, klass_name] = consumer_path.rsplit('.', 1)
     module = importlib.import_module(module_name)
     klass = getattr(module, klass_name)
 
-    return klass(scope, appliance)
+    return klass(scope, uuid)
 
 
 websocket_urlpatterns = [
-    path('ws/<uuid:appliance_uuid>/', dispatch_appliance)
+    path('appliance/ws/<uuid:appliance_uuid>/', dispatch_appliance)
 ]
 
 """
