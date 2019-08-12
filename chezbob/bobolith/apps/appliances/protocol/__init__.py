@@ -1,7 +1,7 @@
-from chezbob.bobolith.apps.appliances.protocol.messages import msg_types, MessageHeader, PingMessage, PongMessage
+from chezbob.bobolith.apps.appliances.protocol.messages import MESSAGE_TYPES, MessageHeader, PingMessage, PongMessage
 
 __all__ = [
-    'msg_types',
+    'MESSAGE_TYPES',
     'MessageHeader',
     'PingMessage',
     'PongMessage'

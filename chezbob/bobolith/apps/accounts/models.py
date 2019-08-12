@@ -15,12 +15,7 @@ class User(AbstractUser):
 
     nickname = models.CharField(_('nickname'), max_length=255)
 
-    balance = models.DecimalField(_('balance'), default=0, max_digits=12, decimal_places=2)
-
     is_fraudulent = models.BooleanField(_('fraudulent'), default=False)
-
-    last_purchase = models.DateTimeField(_('last purchase'), blank=True, null=True)
-    last_deposit = models.DateTimeField(_('last deposit'), blank=True, null=True)
 
     notes = models.TextField()
 

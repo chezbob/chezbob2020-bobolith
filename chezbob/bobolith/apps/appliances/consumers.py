@@ -1,4 +1,5 @@
 import asyncio
+import atexit
 import logging
 from abc import ABCMeta
 from asyncio import Task
@@ -8,15 +9,19 @@ from datetime import timedelta
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from dacite import from_dict
-from django.conf import settings
 from django.utils import timezone
 
 from chezbob.bobolith.apps.appliances.protocol import *
+from chezbob.bobolith.apps.appliances.protocol.messages import MESSAGE_TYPES
 from .models import Appliance
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+
+
+@atexit.register
+def test():
+    print("HELLO WORLD!")
 
 
 class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
@@ -43,10 +48,11 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
         await self.status_down()
 
     async def receive_json(self, content, **kwargs):
-        # todo: handle bad parse gracefully
-        header = from_dict(data_class=MessageHeader, data=content)
-        klass = msg_types[header.msg_type]
-        msg = from_dict(data_class=klass, data=content)
+        header_content = content.pop('header')
+        header = MessageHeader(**header_content)
+
+        klass = MESSAGE_TYPES[header.msg_type]
+        msg = klass(header=header, **content)
 
         return await self.receive_message(msg, **kwargs)
 
@@ -59,12 +65,8 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
         await self.send_pong(ping_msg.ping)
 
     async def send_pong(self, content: str):
-        pong_msg = PongMessage(
-            version=settings.BOBOLITH_PROTOCOL_VERSION,
-            msg_type=msg_types.inverse[PongMessage],
-            pong=content
-        )
-        await self.send_json(asdict(pong_msg))
+        pong_msg = PongMessage(pong=content)
+        await self.send_json(pong_msg.to_json())
 
     # Database Actions
     # ----------------
@@ -83,17 +85,17 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
         async with self.appliance_context(save=True) as appliance:
             appliance.status = Appliance.STATUS_UP
             appliance.last_connected_at = timezone.now()
-        logger.info(f"Status {self.appliance_uuid} => {Appliance.STATUS_UP}")
-
-    async def status_down(self):
-        async with self.appliance_context(save=True) as appliance:
-            appliance.status = Appliance.STATUS_DOWN
-        logger.info(f"Status {self.appliance_uuid} => {Appliance.STATUS_DOWN}")
+        logger.info(f"Appliance UP {self.appliance_uuid}")
 
     async def status_unresponsive(self):
         async with self.appliance_context(save=True) as appliance:
             appliance.status = Appliance.STATUS_UNRESPONSIVE
-        logger.info(f"Status {self.appliance_uuid} => {Appliance.STATUS_UNRESPONSIVE}")
+        logger.info(f"Appliance UNRESPONSIVE {self.appliance_uuid}")
+
+    async def status_down(self):
+        async with self.appliance_context(save=True) as appliance:
+            appliance.status = Appliance.STATUS_DOWN
+        logger.info(f"Appliance DOWN {self.appliance_uuid}")
 
     # Heartbeat management
     # --------------------

@@ -28,10 +28,10 @@ class Appliance(models.Model):
     def status_icon(self):
         if self.status == Appliance.STATUS_UP:
             return mark_safe('<span style="color: green;">▲</span>')
-        if self.status == Appliance.STATUS_DOWN:
-            return mark_safe('<span style="color: red;">▼</span>')
         if self.status == Appliance.STATUS_UNRESPONSIVE:
             return mark_safe('<span style="color: gold;">▼</span>')
+        if self.status == Appliance.STATUS_DOWN:
+            return mark_safe('<span style="color: red;">▼</span>')
 
     status_icon.fget.short_description = _('status')
 

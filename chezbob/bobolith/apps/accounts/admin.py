@@ -12,7 +12,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'nickname', 'email')}),
-        (_('Chez Bob'), {'fields': ('balance', 'last_purchase', 'last_deposit', 'is_fraudulent', 'notes')}),
+        (_('Chez Bob'), {'fields': ('is_fraudulent', 'notes')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -33,7 +33,7 @@ class UserAdmin(BaseUserAdmin):
         })
     )
 
-    list_display = ('username', 'email', 'nickname', 'first_name', 'last_name', 'is_staff', 'balance')
+    list_display = ('username', 'email', 'nickname', 'first_name', 'last_name', 'is_staff')
 
     add_form = UserCreationForm
 

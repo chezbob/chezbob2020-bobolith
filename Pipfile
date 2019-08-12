@@ -18,7 +18,6 @@ django-filter = "*"
 markdown = "*"
 psycopg2 = "*"
 pygments = "*"
-dacite = "*"
 bidict = "*"
 
 [requires]

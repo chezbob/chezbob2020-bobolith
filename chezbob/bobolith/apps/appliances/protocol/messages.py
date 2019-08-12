@@ -1,39 +1,54 @@
-from dataclasses import dataclass
-
-from bidict import frozenbidict
+from bidict import bidict
 from django.conf import settings
 
 
-@dataclass(frozen=True)
 class MessageHeader:
-    version: int
+    __slots__ = ['msg_type', 'version']
+
     msg_type: str
+    version: int
 
-    def __post_init__(self):
-        assert self.version == settings.BOBOLITH_PROTOCOL_VERSION
-        assert self.msg_type is not None
-
-        if self.__class__ is not MessageHeader:
-            assert self.msg_type == msg_types.inverse[self.__class__]
+    def __init__(self, msg_type, version=None):
+        self.msg_type = msg_type
+        if version is None:
+            self.version = settings.BOBOLITH_PROTOCOL_VERSION
 
 
-@dataclass(frozen=True)
-class PingMessage(MessageHeader):
+MESSAGE_TYPES = bidict()
+
+
+def message_mixin(msg_type: str):
+    class MessageMixin:
+        __slots__ = ['header']
+
+        header: MessageHeader
+
+        def __init__(self, header=None, **kwargs):
+            if header is None:
+                self.header = MessageHeader(msg_type=msg_type)
+
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+        def __init_subclass__(cls, **kwargs):
+            if cls not in MESSAGE_TYPES.inverse:
+                MESSAGE_TYPES[msg_type] = cls
+
+        def to_json(self):
+            return {slot: getattr(self, slot)
+                    for slot in self.__slots__
+                    if hasattr(self, slot)}
+
+    return MessageMixin
+
+
+class PingMessage(message_mixin('ping')):
+    __slots__ = ['ping']
+
     ping: str
 
-    def __post_init__(self):
-        super().__post_init__()
 
+class PongMessage(message_mixin('pong')):
+    __slots__ = ['pong']
 
-@dataclass(frozen=True)
-class PongMessage(MessageHeader):
     pong: str
-
-    def __post_init__(self):
-        super().__post_init__()
-
-
-msg_types = frozenbidict({
-    'ping': PingMessage,
-    'pong': PongMessage
-})
