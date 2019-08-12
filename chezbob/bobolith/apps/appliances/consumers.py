@@ -2,9 +2,9 @@ import asyncio
 import logging
 from abc import ABCMeta
 from asyncio import Task
+from contextlib import asynccontextmanager
 from dataclasses import asdict
 from datetime import timedelta
-from typing import Optional
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
@@ -19,33 +19,8 @@ from .models import Appliance
 logger = logging.getLogger(__name__)
 
 
-class AsyncApplianceContextManager:
-    appliance_uuid: str
-    instance: Optional[Appliance]
-
-    def __init__(self, appliance_uuid):
-        self.appliance_uuid = appliance_uuid
-        self.appliance = None
-
-    @database_sync_to_async
-    def get_appliance(self):
-        self.appliance = Appliance.objects.get(pk=self.appliance_uuid)
-        return self.appliance
-
-    @database_sync_to_async
-    def save_appliance(self, appliance: Appliance):
-        appliance.save()
-        del self.appliance
-
-    async def __aenter__(self):
-        return await self.get_appliance()
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.save_appliance(self.appliance)
-
-
 class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
-    HEARTBEAT_TIMEOUT = 3  # in seconds
+    HEARTBEAT_TIMEOUT = 10  # in seconds
 
     appliance_uuid: str
     heartbeat_task: Task
@@ -56,13 +31,13 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
         self.heartbeat_task = asyncio.create_task(self._check_heartbeat())
 
     async def connect(self):
-        logger.info("Connecting...")
+        logger.info(f"[{self.appliance_uuid}] Connecting...")
         await super().connect()
-        logger.info("Connected!")
+        logger.info(f"[{self.appliance_uuid}] Connected!")
         await self.status_up()
 
     async def disconnect(self, code):
-        logger.info("Disconnected!")
+        logger.info(f"[{self.appliance_uuid}] Disconnected!")
         await super().disconnect(code)
         self.heartbeat_task.cancel()
         await self.status_down()
@@ -92,25 +67,36 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
         await self.send_json(asdict(pong_msg))
 
     # Database Actions
+    # ----------------
 
-    def appliance_context(self):
-        return AsyncApplianceContextManager(self.appliance_uuid)
+    @asynccontextmanager
+    async def appliance_context(self, save=False):
+        appliance = await database_sync_to_async(Appliance.objects.get)(pk=self.appliance_uuid)
+
+        try:
+            yield appliance
+        finally:
+            if save:
+                await database_sync_to_async(appliance.save)()
 
     async def status_up(self):
-        async with self.appliance_context() as appliance:
+        async with self.appliance_context(save=True) as appliance:
             appliance.status = Appliance.STATUS_UP
             appliance.last_connected_at = timezone.now()
         logger.info(f"Status {self.appliance_uuid} => {Appliance.STATUS_UP}")
 
     async def status_down(self):
-        async with self.appliance_context() as appliance:
+        async with self.appliance_context(save=True) as appliance:
             appliance.status = Appliance.STATUS_DOWN
         logger.info(f"Status {self.appliance_uuid} => {Appliance.STATUS_DOWN}")
 
     async def status_unresponsive(self):
-        async with self.appliance_context() as appliance:
+        async with self.appliance_context(save=True) as appliance:
             appliance.status = Appliance.STATUS_UNRESPONSIVE
         logger.info(f"Status {self.appliance_uuid} => {Appliance.STATUS_UNRESPONSIVE}")
+
+    # Heartbeat management
+    # --------------------
 
     async def get_last_heartbeat(self):
         async with self.appliance_context() as appliance:
@@ -134,12 +120,20 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
             last_heartbeat = await self.get_last_heartbeat()
 
             if not last_heartbeat:
-                await self.status_unresponsive()
+                await self._heartbeat_timed_out()
                 continue
 
             now = timezone.now()
             if last_heartbeat + heartbeat_delta < now:
+                await self._heartbeat_timed_out()
+
+    async def _heartbeat_timed_out(self):
+        logger.info("Heartbeat timed out.")
+        async with self.appliance_context() as appliance:
+            if appliance.status == Appliance.STATUS_UP:
                 await self.status_unresponsive()
+            elif appliance.status == Appliance.STATUS_UNRESPONSIVE:
+                await self.close()
 
 
 class DummyConsumer(ApplianceConsumer):

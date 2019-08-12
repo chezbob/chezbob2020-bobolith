@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 For documentation on `environ`, see
 https://github.com/joke2k/django-environ
 """
+import os
 
 import environ
 
@@ -148,4 +149,23 @@ REST_FRAMEWORK = {
         # todo: change to a sane default for production!
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
+}
+
+# Logging
+# ...
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'chezbob.bobolith.apps.appliances.consumers': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
 }
