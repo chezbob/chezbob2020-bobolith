@@ -37,6 +37,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+INTERNAL_IPS = []
+
+if DEBUG:
+    INTERNAL_IPS += ['127.0.0.1', '::1']
+
 # Bobolith Configuration
 BOBOLITH_PROTOCOL_VERSION = 0
 
@@ -55,9 +60,15 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
 
+    'mptt',
+
     'chezbob.bobolith.apps.accounts',
     'chezbob.bobolith.apps.appliances',
+    'chezbob.bobolith.apps.finances',
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -68,6 +79,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'chezbob.bobolith.urls'
 

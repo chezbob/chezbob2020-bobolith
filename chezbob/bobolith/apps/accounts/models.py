@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group as DjangoGroup
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 
@@ -30,3 +32,9 @@ class User(AbstractUser):
 class Group(DjangoGroup):
     class Meta:
         proxy = True
+
+
+@receiver(post_save, sender=User, dispatch_uid="foo")
+def test(sender, instance, **kwargs):
+    print(f"UPDATE_FIELDS: {kwargs.get('update_fields', None)}")
+

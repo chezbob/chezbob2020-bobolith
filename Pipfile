@@ -7,6 +7,8 @@ verify_ssl = true
 bpython = "*"
 pylint = "*"
 websockets = "*"
+django-debug-toolbar = "*"
+werkzeug = "*"
 
 [packages]
 channels = "*"
@@ -15,6 +17,7 @@ djangorestframework = "*"
 django-environ = "*"
 django-extensions = "*"
 django-filter = "*"
+django-mptt = "*"
 markdown = "*"
 psycopg2 = "*"
 pygments = "*"
