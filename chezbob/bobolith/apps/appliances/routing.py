@@ -1,36 +1,54 @@
 import importlib
 
-from channels.db import database_sync_to_async
-from django.urls import path
+from channels.routing import URLRouter
+from django.db import close_old_connections
+from django.urls import path, re_path
 
 from .models import Appliance
 
 
-def get_appliance(uuid):
-    return Appliance.objects.get(pk=uuid)
+class ApplianceUUIDRouter:
+    """
+    Routes to different appliance consumers based on UUIDs.
+    """
+
+    def __init__(self, appliances_qs):
+        self.queryset = appliances_qs
+
+    def __call__(self, scope):
+        close_old_connections()
+
+        kwargs = scope['url_route']['kwargs']
+        uuid = kwargs['appliance_uuid']
+
+        try:
+            [consumer_path] = Appliance.objects.values_list('consumer').get(pk=uuid)
+        except Appliance.DoesNotExist:
+            raise ValueError(f"No appliance found for UUID ${uuid}.")
+
+        # Ensure we have the most recent version (even if we have hot-reloading).
+        importlib.invalidate_caches()
+
+        [module_name, klass_name] = consumer_path.rsplit('.', 1)
+        try:
+            module = importlib.import_module(module_name)
+        except ModuleNotFoundError:
+            raise ValueError(f"Consumer module not found for appliance with UUID: ${uuid}")
+
+        klass = getattr(module, klass_name)
+        if klass is None:
+            raise ValueError(f"Consumer class not found in module ${module} for appliance with UUID ${uuid}.")
+
+        return klass(scope)
 
 
-def dispatch_appliance(scope):
-    kwargs = scope['url_route']['kwargs']
-    uuid = kwargs['appliance_uuid']
-
-    [consumer_path] = Appliance.objects.values_list('consumer').get(pk=uuid)
-
-    # Ensure we have the most recent version (even if we have hot-reloading).
-    importlib.invalidate_caches()
-
-    [module_name, klass_name] = consumer_path.rsplit('.', 1)
-    module = importlib.import_module(module_name)
-    klass = getattr(module, klass_name)
-
-    return klass(scope)
-
-
-websocket_urlpatterns = [
-    path('appliance/ws/<uuid:appliance_uuid>/', dispatch_appliance)
-]
+websocket_router = URLRouter([
+    path('ws/<uuid:appliance_uuid>/', ApplianceUUIDRouter(Appliance.objects.all()))
+])
 
 """
+Note to self:
+
 Schema of scope is:
 
 cookies: Dict[str, str]
