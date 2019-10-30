@@ -58,13 +58,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
-    'rest_framework',
+    # 'rest_framework',
 
     'mptt',
 
     'chezbob.bobolith.apps.accounts',
     'chezbob.bobolith.apps.appliances',
-    'chezbob.bobolith.apps.finances',
+    # 'chezbob.bobolith.apps.finances',
 ]
 
 if DEBUG:
