@@ -1,6 +1,6 @@
 
-# Created by https://www.gitignore.io/api/python,django,pycharm+all
-# Edit at https://www.gitignore.io/?templates=python,django,pycharm+all
+# Created by https://www.gitignore.io/api/vim,python,django,pycharm+all
+# Edit at https://www.gitignore.io/?templates=vim,python,django,pycharm+all
 
 ### This Project ###
 
@@ -281,4 +281,24 @@ modules.xml
 
 # Pyre type checker
 
-# End of https://www.gitignore.io/api/python,django,pycharm+all
+### Vim ###
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
+
+# End of https://www.gitignore.io/api/vim,python,django,pycharm+all
