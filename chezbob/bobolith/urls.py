@@ -20,9 +20,6 @@ from chezbob.bobolith import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-accounts/', include('rest_framework.urls', namespace='rest_framework')),
-
-    path('api/accounts/', include('chezbob.bobolith.apps.accounts.urls'))
 ]
 
 if settings.DEBUG:

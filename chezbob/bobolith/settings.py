@@ -58,9 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
-    'rest_framework',
 
     'mptt',
+    'djmoney',
 
     'chezbob.bobolith.apps.accounts',
     'chezbob.bobolith.apps.appliances',
@@ -154,16 +154,6 @@ STATIC_ROOT = public_root('static')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ['static']
-
-# Django Rest Framework
-# https://www.django-rest-framework.org/
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        # todo: change to a sane default for production!
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
 
 # Logging
 # ...

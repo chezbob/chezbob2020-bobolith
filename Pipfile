@@ -13,7 +13,6 @@ werkzeug = "*"
 [packages]
 channels = "*"
 django = "*"
-djangorestframework = "*"
 django-environ = "*"
 django-extensions = "*"
 django-filter = "*"
@@ -22,6 +21,7 @@ markdown = "*"
 psycopg2 = "*"
 pygments = "*"
 bidict = "*"
+django-money = "*"
 
 [requires]
 python_version = "3.7"
