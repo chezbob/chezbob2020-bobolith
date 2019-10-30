@@ -30,9 +30,10 @@ class ApplianceConsumer(AsyncJsonWebsocketConsumer, metaclass=ABCMeta):
     appliance_uuid: str
     heartbeat_task: Task
 
-    def __init__(self, scope, appliance_uuid: str):
+    def __init__(self, scope):
         super().__init__(scope)
-        self.appliance_uuid = appliance_uuid
+        kwargs = scope['url_route']['kwargs']
+        self.appliance_uuid = kwargs['appliance_uuid']
         self.heartbeat_task = asyncio.create_task(self._check_heartbeat())
 
     async def connect(self):
