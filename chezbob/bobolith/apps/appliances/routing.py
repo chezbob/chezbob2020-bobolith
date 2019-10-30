@@ -23,7 +23,7 @@ def dispatch_appliance(scope):
     module = importlib.import_module(module_name)
     klass = getattr(module, klass_name)
 
-    return klass(scope, uuid)
+    return klass(scope)
 
 
 websocket_urlpatterns = [
