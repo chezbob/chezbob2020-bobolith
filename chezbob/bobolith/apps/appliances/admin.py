@@ -1,10 +1,9 @@
 from django.contrib import admin
+from django.contrib.admin import AdminSite
 
-from chezbob.bobolith.admin import site as admin_site
 from .models import Appliance, ApplianceLink
 
 
-@admin.register(Appliance, site=admin_site)
 class ApplianceAdmin(admin.ModelAdmin):
     list_display = ('name',
                     'uuid',
@@ -14,6 +13,10 @@ class ApplianceAdmin(admin.ModelAdmin):
                     'last_heartbeat_at')
 
 
-@admin.register(ApplianceLink, site=admin_site)
 class ApplianceLinkAdmin(admin.ModelAdmin):
     pass
+
+
+def register_default(admin_site: AdminSite):
+    admin_site.register(Appliance, ApplianceAdmin)
+    admin_site.register(ApplianceLink, ApplianceLinkAdmin)

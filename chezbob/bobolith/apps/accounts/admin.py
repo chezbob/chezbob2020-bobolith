@@ -1,13 +1,11 @@
-from django.contrib import admin
+from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
 from django.utils.translation import gettext_lazy as _
 
-from chezbob.bobolith.admin import site as admin_site
 from .forms import UserCreationForm
 from .models import User, Group
 
 
-@admin.register(User, site=admin_site)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -40,6 +38,10 @@ class UserAdmin(BaseUserAdmin):
     pass
 
 
-@admin.register(Group, site=admin_site)
 class GroupAdmin(BaseGroupAdmin):
     pass
+
+
+def register_default(admin_site: AdminSite):
+    admin_site.register(User, UserAdmin)
+    admin_site.register(Group, GroupAdmin)
