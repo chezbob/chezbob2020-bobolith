@@ -22,7 +22,7 @@ class ApplianceUUIDRouter:
         uuid = kwargs['appliance_uuid']
 
         try:
-            [consumer_path] = Appliance.objects.values_list('consumer').get(pk=uuid)
+            [consumer_path] = self.queryset.values_list('consumer').get(pk=uuid)
         except Appliance.DoesNotExist:
             raise ValueError(f"No appliance found for UUID ${uuid}.")
 
