@@ -45,7 +45,7 @@ class ApplianceLink(models.Model):
     src_appliance = models.ForeignKey(to=Appliance,
                                       verbose_name=_('source appliance'),
                                       on_delete=models.CASCADE,
-                                      related_name='src_links',)
+                                      related_name='src_links', )
 
     dst_appliance = models.ForeignKey(to=Appliance,
                                       verbose_name=_('destination appliance'),

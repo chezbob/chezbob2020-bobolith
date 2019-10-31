@@ -62,9 +62,9 @@ INSTALLED_APPS = [
 
     'mptt',
 
-    'chezbob.bobolith.apps.accounts',
-    'chezbob.bobolith.apps.appliances',
-    # 'chezbob.bobolith.apps.finances',
+    'chezbob.accounts',
+    'chezbob.appliances',
+    # 'chezbob.finances',
 ]
 
 if DEBUG:
@@ -153,7 +153,7 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = public_root('static')
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = ['static']
+STATICFILES_DIRS = ['chezbob/bobolith/static']
 
 # Django Rest Framework
 # https://www.django-rest-framework.org/
@@ -177,7 +177,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'chezbob.bobolith.apps.appliances.consumers': {
+        'chezbob.appliances.consumers': {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },

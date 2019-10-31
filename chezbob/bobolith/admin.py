@@ -3,8 +3,9 @@ import random
 from django.contrib.admin import AdminSite as BaseAdminSite
 from django.utils.translation import gettext_lazy as _
 
-from .apps.accounts.admin import register_default as register_accounts
-from .apps.appliances.admin import register_default as register_appliances
+from chezbob.accounts.admin import register_default as register_accounts
+from chezbob.appliances.admin import register_default as register_appliances
+
 
 class AdminSite(BaseAdminSite):
     WELCOME_MESSAGES = [

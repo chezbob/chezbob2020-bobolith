@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,7 +17,9 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(primary_key=True, serialize=False, verbose_name='appliance uuid')),
                 ('name', models.CharField(max_length=255, unique=True, verbose_name='appliance name')),
                 ('consumer', models.CharField(max_length=255, verbose_name='consumer class')),
-                ('status', models.CharField(choices=[('UP', 'Up'), ('DOWN', 'Down'), ('DOWN', 'Unresponsive')], default='DOWN', max_length=15)),
+                ('status',
+                 models.CharField(choices=[('UP', 'Up'), ('DOWN', 'Down'), ('DOWN', 'Unresponsive')], default='DOWN',
+                                  max_length=15)),
                 ('last_connected_at', models.DateTimeField(blank=True, null=True, verbose_name='last connected at')),
                 ('last_heartbeat_at', models.DateTimeField(blank=True, null=True, verbose_name='last heartbeat at')),
             ],
@@ -28,8 +29,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('key', models.CharField(max_length=255, verbose_name='link key')),
-                ('dst_appliance', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dst_links', to='appliances.Appliance', verbose_name='destination appliance')),
-                ('src_appliance', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='src_links', to='appliances.Appliance', verbose_name='source appliance')),
+                ('dst_appliance',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dst_links',
+                                   to='appliances.Appliance', verbose_name='destination appliance')),
+                ('src_appliance',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='src_links',
+                                   to='appliances.Appliance', verbose_name='source appliance')),
             ],
         ),
     ]

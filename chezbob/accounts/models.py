@@ -37,4 +37,3 @@ class Group(DjangoGroup):
 @receiver(post_save, sender=User, dispatch_uid="foo")
 def test(sender, instance, **kwargs):
     print(f"UPDATE_FIELDS: {kwargs.get('update_fields', None)}")
-

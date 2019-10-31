@@ -4,15 +4,13 @@ import logging
 from abc import ABCMeta
 from asyncio import Task
 from contextlib import asynccontextmanager
-from dataclasses import asdict
 from datetime import timedelta
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.utils import timezone
 
-from chezbob.bobolith.apps.appliances.protocol import *
-from chezbob.bobolith.apps.appliances.protocol.messages import MESSAGE_TYPES
+from .protocol.messages import MESSAGE_TYPES, MessageHeader, PingMessage, PongMessage
 from .models import Appliance
 
 # Get an instance of a logger
