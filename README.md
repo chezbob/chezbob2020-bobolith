@@ -1,6 +1,6 @@
 # The Bobolith
 
-![Bobolith](static/snack_odyssey_2001.png)
+![Bobolith](chezbob/bobolith/static/snack_odyssey_2001.png)
 
 This repository contains the Chez Bob 2020 codebase. It is organized as a set of Python packages under the `chezbob` [namespace package](https://packaging.python.org/guides/packaging-namespace-packages/). 
 
