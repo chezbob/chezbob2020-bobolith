@@ -12,11 +12,13 @@ class Appliance(models.Model):
     STATUS_UP = 'UP'
     STATUS_DOWN = 'DOWN'
     STATUS_UNRESPONSIVE = 'UNRESPONSIVE'
+    STATUS_NA = 'NOT_APPLICABLE'
 
     STATUS_CHOICES = (
         (STATUS_UP, 'Up'),
         (STATUS_DOWN, 'Down'),
-        (STATUS_DOWN, 'Unresponsive')
+        (STATUS_DOWN, 'Unresponsive'),
+        (STATUS_NA, "N/A")
     )
 
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=STATUS_DOWN)
@@ -34,6 +36,15 @@ class Appliance(models.Model):
             return mark_safe('<span style="color: red;">▼</span>')
 
     status_icon.fget.short_description = _('status')
+
+    def status_up(self):
+        self.status = Appliance.STATUS_UP
+
+    def status_unresponsive(self):
+        self.status = Appliance.STATUS_UNRESPONSIVE
+
+    def status_down(self):
+        self.status = Appliance.STATUS_DOWN
 
     def __str__(self):
         return f"{self.name} ({self.uuid})"
