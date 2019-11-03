@@ -5,12 +5,22 @@ from .models import Appliance, ApplianceLink
 
 
 class ApplianceAdmin(admin.ModelAdmin):
-    list_display = ('name',
-                    'uuid',
-                    'consumer',
-                    'status_icon',
-                    'last_connected_at',
-                    'last_heartbeat_at')
+    fields = (
+        'uuid',
+        'name',
+        'consumer',
+        'status',
+        'last_connected_at',
+        'last_heartbeat_at'
+    )
+    readonly_fields = ('uuid',)
+    list_display = (
+        'name',
+        'uuid',
+        'consumer',
+        'status_icon',
+        'last_connected_at',
+        'last_heartbeat_at')
 
 
 class ApplianceLinkAdmin(admin.ModelAdmin):

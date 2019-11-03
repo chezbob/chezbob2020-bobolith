@@ -1,10 +1,11 @@
+import uuid
 from django.db import models
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 
 class Appliance(models.Model):
-    uuid = models.UUIDField(_('appliance uuid'), primary_key=True)
+    uuid = models.UUIDField(_('appliance uuid'), primary_key=True, default=uuid.uuid4)
     name = models.CharField(_('appliance name'), max_length=255, unique=True)
 
     consumer = models.CharField(_('consumer class'), max_length=255)
