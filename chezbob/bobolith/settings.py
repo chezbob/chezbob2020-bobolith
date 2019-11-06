@@ -67,8 +67,8 @@ INSTALLED_APPS = [
     # 'chezbob.finances',
 ]
 
-if DEBUG:
-    INSTALLED_APPS.append('debug_toolbar')
+# if DEBUG:
+#     INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,8 +80,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if DEBUG:
-    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+# if DEBUG:
+#     MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'chezbob.bobolith.urls'
 

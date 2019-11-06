@@ -3,6 +3,7 @@ import json
 from bidict import bidict
 from django.conf import settings
 
+
 class MessageHeader:
     __slots__ = ['msg_type', 'version']
 
@@ -57,6 +58,7 @@ class PongMessage(message_mixin('pong')):
 
     pong: str
 
+
 def _encode(o):
     if o.__class__ in MESSAGE_TYPES.inverse:
         return o.to_json()
@@ -64,14 +66,15 @@ def _encode(o):
         raise TypeError(f'Object of type {o.__class__.__name__} '
                         f'is not JSON serializable')
 
+
 def _decode(json_dict):
     if 'header' not in json_dict:
         return json_dict
     content = dict(json_dict)
     header_content = content.pop('header')
     if type(header_content) is not dict or \
-       'msg_type' not in header_content or \
-       header_content['msg_type'] not in MESSAGE_TYPES:
+            'msg_type' not in header_content or \
+            header_content['msg_type'] not in MESSAGE_TYPES:
         # This is a non-message dict, just return it.
         return json_dict
     header = MessageHeader(**header_content)
@@ -80,6 +83,7 @@ def _decode(json_dict):
     msg = klass(header=header, **content)
 
     return msg
+
 
 MessageEncoder = json.JSONEncoder(default=_encode)
 MessageDecoder = json.JSONDecoder(object_hook=_decode)

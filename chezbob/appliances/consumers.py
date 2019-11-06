@@ -1,17 +1,11 @@
-import asyncio
-import atexit
 import logging
 from abc import ABCMeta
-from asyncio import Task
-from contextlib import asynccontextmanager
-from datetime import timedelta
 
-from channels.db import database_sync_to_async
-from channels.generic.websocket import AsyncJsonWebsocketConsumer, JsonWebsocketConsumer
+from channels.generic.websocket import JsonWebsocketConsumer
 from django.utils import timezone
 
-from .protocol.messages import MessageEncoder, MessageDecoder, PingMessage, PongMessage
 from .models import Appliance
+from .protocol.messages import MessageEncoder, MessageDecoder, PingMessage, PongMessage
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -32,7 +26,6 @@ class ApplianceConsumer(JsonWebsocketConsumer, metaclass=ABCMeta):
         super().__init__(scope)
         kwargs = scope['url_route']['kwargs']
         self.appliance_uuid = kwargs['appliance_uuid']
-
 
     def connect(self):
         logger.info(f"[{self.appliance_uuid}] Connecting...")
